@@ -4,6 +4,9 @@ package org.zerock.ex02.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.zerock.ex02.entity.Memo;
 
@@ -70,6 +73,23 @@ public class MemoRepositoryTests {
     public void testDelete() {
         Long mno = 100L;
         memoRepository.deleteById(mno);
+    }
+
+    // 페이징처리
+    @Test
+    public void testPageDefault() {
+
+        // 1페이지 10개
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Memo> result = memoRepository.findAll(pageable);
+        System.out.println(result);
+        System.out.println("===========================");
+        System.out.println(("Total Pages: " + result.getTotalPages())); // 총 몇페이지
+        System.out.println("Total Count: " + result.getTotalElements()); // 전체 개수
+        System.out.println("Page Number: " + result.getNumber()); // 현재 페이지번호. 0부터시작
+        System.out.println("has next page?: "+result.hasNext()); // 다음페이지 존재 여부
+        System.out.println("first Page?: " + result.isFirst()); // 시작페이지(0) 여부
+
     }
 
 
