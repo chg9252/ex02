@@ -8,9 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import org.zerock.ex02.entity.Memo;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -110,8 +115,35 @@ public class MemoRepositoryTests {
         });
     }
 
+    // 쿼리메서드
+    @Test
+    public void testQueryMethods() {
+        List<Memo> list = memoRepository.findByMnoBetweenOrderByMnoDesc(270L, 280L); // Memo 객체의 mno값이 70부터 80, mno은 역순으로 정렬
+        for (Memo memo : list) {
+            System.out.println(memo);
+        }
+        // 참고: https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.repositories
+        // 4.2. Query Methods
+    }
 
+    // 쿼리메서드와 Pagealbe결합
+    @Test
+    public void testQueryMethodWithPageable() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("mno").descending());
+        Page<Memo> result = memoRepository.findByMnoBetween(210L, 250L, pageable);
+        result.get().forEach(memo -> System.out.println(memo));
+    }
 
+    // deleteBy로 시작하는 삭제처리
+    @Commit
+    @Transactional
+    @Test
+    public void testDeleteQueryMethods() {
+        memoRepository.deleteMemoByMnoLessThan(250L);
+        // 하나씩 삭제된다. select하고 삭제하고 select하고 삭제하고..
+    }
+
+    // @Query의 파라미터 바인딩
 
 
 
