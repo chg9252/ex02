@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.zerock.ex02.entity.Memo;
 
@@ -73,6 +74,7 @@ public class MemoRepositoryTests {
     public void testDelete() {
         Long mno = 100L;
         memoRepository.deleteById(mno);
+        // memoRepository.deleteAll();
     }
 
     // 페이징처리
@@ -91,6 +93,29 @@ public class MemoRepositoryTests {
         System.out.println("first Page?: " + result.isFirst()); // 시작페이지(0) 여부
 
     }
+
+    // 정렬조건 추가
+    @Test
+    public void testSort(){
+        Sort sort1 = Sort.by("mno").descending(); // sort 조건1
+        Sort sort2 = Sort.by("memoText").ascending();
+        Sort sortAll = sort1.and(sort2); // and를 이용해 sort조건 연결
+
+        // Pageable pageable = PageRequest.of(0, 10, sort1);
+        Pageable pageable = PageRequest.of(0, 20, sortAll);
+
+        Page<Memo> result = memoRepository.findAll(pageable);
+        result.get().forEach(memo -> {
+            System.out.println(memo);
+        });
+    }
+
+
+
+
+
+
+
 
 
 }
